@@ -1,0 +1,61 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version for the DMG artifact
+        required: false
+        default: ""
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: macos-14
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        shell: bash
+        run: |
+          version=""
+          if [[ "${GITHUB_REF:-}" == refs/tags/v* ]]; then
+            version="${GITHUB_REF_NAME#v}"
+          fi
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.version }}" ]; then
+            version="${{ inputs.version#v }}"
+          fi
+          if [ -z "$version" ]; then
+            version="dev-${GITHUB_RUN_NUMBER}"
+          fi
+          echo "RELEASE_VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Run tests
+        run: swift test
+
+      - name: Build DMG
+        run: ./scripts/create-dmg.sh "$RELEASE_VERSION"
+
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: MacSqueeze-${{ env.RELEASE_VERSION }}
+          path: |
+            dist/MacSqueeze-${{ env.RELEASE_VERSION }}.dmg
+            dist/MacSqueeze-${{ env.RELEASE_VERSION }}.dmg.sha256
+
+      - name: Create GitHub release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/MacSqueeze-${{ env.RELEASE_VERSION }}.dmg
+            dist/MacSqueeze-${{ env.RELEASE_VERSION }}.dmg.sha256
+          generate_release_notes: true
