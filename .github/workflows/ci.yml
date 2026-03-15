@@ -8,11 +8,20 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: macos-14
+    runs-on: macos-15
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
+      - name: Set up Swift 6.1.2
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.1.2"
+
+      - name: Show toolchain
+        run: |
+          swift --version
 
       - name: Build
         run: swift build
