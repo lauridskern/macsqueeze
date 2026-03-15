@@ -2,7 +2,7 @@
 
 MacSqueeze is a native macOS app for batch image compression, conversion, and resizing. Drop in a folder of images, pick one export recipe, and ship the whole batch in one pass.
 
-![MacSqueeze preview](docs/preview.svg)
+![MacSqueeze preview](docs/preview.webp)
 
 ## Features
 
