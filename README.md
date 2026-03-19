@@ -35,11 +35,12 @@ swift test
 
 MacSqueeze ships from GitHub Actions.
 
-1. Create a version tag like `v1.0.0`.
-2. Push the tag to GitHub.
-3. The `Release` workflow runs tests, builds the `.app`, packages a `.dmg`, and publishes a GitHub release with the artifacts attached.
+1. Work on `dev`.
+2. Open a PR from `dev` into `main`.
+3. Merge into `main` only when you want to ship a release.
+4. The `Release` workflow runs tests, builds the `.app`, packages a `.dmg`, bumps the next patch version, creates a new `v*` tag, and publishes the GitHub release automatically.
 
-If you only want a fresh DMG artifact without cutting a release, run the `Release` workflow manually from the Actions tab.
+The default versioning flow is automatic patch bumps: `v0.1.0`, `v0.1.1`, `v0.1.2`, and so on.
 
 ## Project Layout
 
